@@ -1,0 +1,101 @@
+<!--extends 태그는 첫 줄에 작성-->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} post_detail.html {% endblock %}
+{% block extra-style %}
+<style>
+.post-body {
+    width: 80%;
+    margin: auto;
+    font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+    font-size: 16px;
+}
+</style>
+{% endblock extra-style %}
+
+{% block header%}
+  <header class="masthead" style="background-image: url('{%static 'img/post-bg.jpg' %}')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="site-heading">
+            <h1>블로그</h1>
+            <span class="subheading">저의 생각을 기록한 공간입니다</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{%endblock%}
+
+
+
+{% block content %}
+<div class="post-body">
+    <a href="{% url 'board:update' object.id %}" class="btn btn-primary btn-sm" role="button" aria-pressed="true">수정</a>
+    <a href="{% url 'board:delete' object.id %}" class="btn btn-primary btn-sm" role="button" aria-pressed="true">삭제</a>
+
+
+    <!--제목-->
+    <h2>{{object.title}}</h2>
+    <!--이전/다음 포스트 이동-->
+
+    <p>
+        {% if object.get_previous %}
+            <a href="{{ object.get_previous.get_absolute_url }}" title="prev_post">
+                &laquo;-- {{ object.get_previous }}
+            </a>
+        {% endif %}
+
+        {% if object.get_next %}
+            <a href="{{ object.get_next.get_absolute_url }}" title="next_post">
+                {{ object.get_next }} --&raquo;
+            </a>
+        {% endif %}
+    </p>
+    <!-- 수정날짜 -->
+    <p> {{object.modify_dt|date:"j F Y"}}</p>
+    <br>
+    <!-- 본문 -->
+
+    <div>
+        {{ object.content|linebreaks }}
+    </div>
+    <!--Tag 관련 추가-->
+    <br>
+    <div>
+        <b>TAGS</b> <i class="fas fa-tag"></i>
+        {% load taggit_templatetags2_tags %}
+        {% get_tags_for_object object as "tags" %}
+        {% for tag in tags %}
+            <a href="{% url 'board:tagged_object_list' tag.name %}">{{tag.name}}</a>
+        {% endfor %}
+	&emsp;
+    </div>
+
+    <!--댓글 관련 추가-->
+    <!--https://django-web-programming-2.disqus.com/admin/install/platforms/universalcode/-->
+    <br>
+    <div id="disqus_thread"></div>
+</div>
+{% endblock %}
+
+{% block extra-script %}
+    <script>
+
+    var disqus_config = function () {
+        this.page.url = '{{disqus_url}}';
+        this.page.identifier = '{{disqus_id}}';
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = 'https://django-web-programming-2.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+{%endblock%}

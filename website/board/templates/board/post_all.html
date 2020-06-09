@@ -1,0 +1,50 @@
+<!--extends 태그는 첫 줄에 작성-->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} bookmark_detail.html {% endblock %}
+
+{% block header%}
+  <header class="masthead" style="background-image: url('{%static 'img/post-bg.jpg' %}')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="site-heading">
+            <h1>블로그</h1>
+            <span class="subheading">저의 생각을 기록한 공간입니다</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{%endblock%}
+
+
+{% block content %}
+    <h2>My Blog List</h2>
+    <a href="{% url 'board:add'%}" class="btn btn-primary btn-sm float-right" role="button" aria-pressed="true">새로 만들기</a>
+
+    <br>
+    {% for post in posts %}
+        <h3><a href ='{{post.get_absolute_url}}'>{{post.title}} </a></h3>
+        {{post.modify_dt|date:"N d, Y"}}
+        <p>{{post.description}}</p>
+    {% endfor %}
+    <br>
+
+    <div>
+        <span>
+            {% if page_obj.has_previous %}
+                <a href="?page={{page_obj.previous_page_number}}">[이전페이지]</a>
+            {% endif %}
+
+            전체 {{page_obj.paginator.num_pages}}페이지 중 {{ page_obj.number}} 페이지
+
+             {% if page_obj.has_next %}
+                <a href="?page={{page_obj.next_page_number}}">[다음페이지]</a>
+            {% endif %}
+        </span>
+    </div>
+</body>
+{% endblock %}
